@@ -19,7 +19,7 @@ The repository contains:
 Wstd_basics.v
 Definitions and basic propreties of setoids and setoid families.
 Mainly due to Erik Palmgren and Olov Wilander.
-. 
+
 Wstd.v
 The construction of initial algebras for polynomial endofunctors.
 Reference to the propositions in the paper is given.
