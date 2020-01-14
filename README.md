@@ -17,13 +17,13 @@ with the aim of finding a uniform construction of extensional W-types.
 
 The repository contains:
 
-Wstd_basics.v  
-Definitions and basic propreties of setoids and setoid families.
-Mainly due to Erik Palmgren and Olov Wilander.
+README.md  
+This file
 
 Wstd.v  
 The construction of initial algebras for polynomial endofunctors.
 Reference to the propositions in the paper is given.
 
-README.md  
-This file
+Wstd_basics.v  
+Definitions and basic propreties of setoids and setoid families.
+Mainly due to Erik Palmgren and Olov Wilander.
