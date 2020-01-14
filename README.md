@@ -1,5 +1,6 @@
 # W-types-in-setoids
-This is the Coq 8.8.0 formalisation of the paper "W-types in setoids", arXiv:1809.02375.
+This is the Coq 8.8.0 formalisation of the paper "W-types in setoids",
+[arXiv:1809.02375](https://arxiv.org/abs/1809.02375).
 
 Abstract:
 W-types and their categorical analogue, initial algebras for polynomial endofunctors,
@@ -16,13 +17,13 @@ with the aim of finding a uniform construction of extensional W-types.
 
 The repository contains:
 
-Wstd_basics.v
+Wstd_basics.v  
 Definitions and basic propreties of setoids and setoid families.
 Mainly due to Erik Palmgren and Olov Wilander.
 
-Wstd.v
+Wstd.v  
 The construction of initial algebras for polynomial endofunctors.
 Reference to the propositions in the paper is given.
 
-README.md
+README.md  
 This file
