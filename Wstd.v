@@ -72,8 +72,8 @@ Definition PolyObj {A : setoid}(B : setoidfamily A)(X : setoid) : setoid.
   intro z. exists (setoidrefl _ (projT1 z)). intro b.
   apply (setoidmapextensionality _ _ (projT2 z)). apply setoidfamilyrefgeneralinv.
   intros z z' H. set (p := projT1 H). set (q := projT2 H).
-  exists (p ⁻¹). intro b'. apply setoidsym.
-  apply setoidtra with (y := projT2 z' ∘ B•p (B•(p ⁻¹) b')). apply q.
+  exists (p ˢ). intro b'. apply setoidsym.
+  apply setoidtra with (y := projT2 z' ∘ B•p (B•(p ˢ) b')). apply q.
   apply (setoidmapextensionality _ _ (projT2 z')). apply setoidfamilycmpinvert.
   intros z z' z'' H H'.
   set (p := projT1 H). set (q := projT2 H). set (p' := projT1 H'). set (q' := projT2 H').
@@ -140,6 +140,27 @@ Definition WstdPER {A : setoid}(B : setoidfamily A) :
   WstdObj B → WstdObj B → Set :=
   λ w w', WstdPER_aux B (w , w').
 
+
+Definition isMatch {A : setoid}{B : setoidfamily A}{w w' : WstdObj B}
+           (p : WstdObjIndex B w ≈ WstdObjIndex B w')
+           (df : ∀ b b', b ≈[p] b' →
+               WstdPER B (WstdObjBranches B w b)
+                         (WstdObjBranches B w' b'))
+  : WstdPER B w w'.
+
+  apply (supd (λ (z : WstdObj B ∧ WstdObj B)
+                 (p : WstdObjIndex B (fst z) ≈,{A} WstdObjIndex B (snd z)),
+               TotStdfamEq B p)
+              (λ (z : WstdObj B ∧ WstdObj B)
+                 (p : WstdObjIndex B (fst z) ≈,{A} WstdObjIndex B (snd z))
+                 (v : TotStdfamEq B p),
+               (WstdObjBranches B (fst z) (Unpack1 B p v),
+                WstdObjBranches B (snd z) (Unpack2 B p v)))
+              (w , w') p).
+  simpl. intro v. apply (df (Unpack1 B p v) (Unpack2 B p v) (UnpackEq B p v)).
+Defined.
+
+
 Definition WstdPER_Indices {A : setoid}(B : setoidfamily A)
            (w w' : WstdObj B) :
   WstdPER B w w' → WstdObjIndex B w ≈ WstdObjIndex B w' :=
@@ -163,14 +184,14 @@ Lemma WstdPER_aux_symm {A : setoid}(B : setoidfamily A) :
   ∀ z, WstdPER_aux B z → WstdPER_aux B (snd z , fst z).
 Proof.
   intros z r. induction r as [z p feq IH].
-  assert (g : (∀ v : TotStdfamEq B (p⁻¹),
+  assert (g : (∀ v : TotStdfamEq B (p ˢ),
              WstdPER_aux B (WstdObjBranches B (snd z) (Unpack1 B _ v),
                             WstdObjBranches B (fst z) (Unpack2 B _ v)) )).
   intro v. set (b' := Unpack1 B _ v). set (b := Unpack2 B _ v). set (q := UnpackEq B _ v).
   set (v' := PackTotEq B p b b' (EqRelOverIsIrr _ _ _ _ _ p _ _
-                                         (EqRelOverIsSymm _ _ _ _ p⁻¹ _ _ q))).
+                                         (EqRelOverIsSymm _ _ _ _ (p ˢ) _ _ q))).
   apply (IH v').
-  apply (supd _ _ (snd z , fst z) p⁻¹ g).
+  apply (supd _ _ (snd z , fst z) p ˢ g).
 Qed.
 
 Lemma WstdPER_symm {A : setoid}(B : setoidfamily A) :
@@ -294,11 +315,11 @@ Qed.
 
 Lemma WstdBranchesEqInv {A : setoid}(B : setoidfamily A)
       (u u' : Wstd B)(r : u ≈ u') :
-  (WstdBranches B u) ∘ (B•((WstdIndex B) ↱ r⁻¹)) ≈ (WstdBranches B u').
+  (WstdBranches B u) ∘ (B•((WstdIndex B) ↱ r ˢ)) ≈ (WstdBranches B u').
 Proof.
   apply setoidtra with
       (y := (WstdBranches B u') ∘ (B•((WstdIndex B) ↱ r))
-                                ∘ (B•((WstdIndex B) ↱ r⁻¹))).
+                                ∘ (B•((WstdIndex B) ↱ r ˢ))).
   intro b. apply (WstdBranchesEq B r).
   intro b. apply (setoidmapextensionality _ _ (WstdBranches B u')).
   apply setoidfamilycmpinvert.
@@ -496,20 +517,20 @@ Definition CohFam_fnc {A : setoid}(B : setoidfamily A)(X : setoid){u u' : Wstd B
   u ≈ u' → CohFam_std B X u → CohFam_std B X u'.
 
   intros r CF. set (F := projT1 CF). set (C := projT2 CF : isCohFam B X u F). simpl in C. simpl.
-  set (F' := λ s', (F ((ImSubtree B)•(r ⁻¹) s')) ∘ ((ImSubtree B)•(WstdBranchesEq B (r ⁻¹) s'))).
+  set (F' := λ s', (F ((ImSubtree B)•(r ˢ) s')) ∘ ((ImSubtree B)•(WstdBranchesEq B (r ˢ) s'))).
   exists F'.
   intros s'₁ s'₂ q' ss'. unfold F'.
-  set (s₁ := (ImSubtree B)•r ⁻¹ s'₁). set (s₂ := (ImSubtree B)•r ⁻¹ s'₂). set (q := (ImSubtree B)•r ⁻¹ ↱ q' : s₁ ≈ s₂).
-  set (ss := (ImSubtree B)•(WstdBranchesEq B (r ⁻¹) s'₁) ss').
+  set (s₁ := (ImSubtree B)•r ˢ s'₁). set (s₂ := (ImSubtree B)•r ˢ s'₂). set (q := (ImSubtree B)•r ˢ ↱ q' : s₁ ≈ s₂).
+  set (ss := (ImSubtree B)•(WstdBranchesEq B (r ˢ) s'₁) ss').
   
   specialize (C s₁ s₂ q ss).
   refine ( _ ⊙ C).
   apply (setoidmapextensionality _ _ (F s₂)).
-  assert ( H1 : (ImSubtree B)•q ss ≈ (ImSubtree B)•(q ⊙ (WstdBranchesEq B (r ⁻¹) s'₁)) ss' ).
+  assert ( H1 : (ImSubtree B)•q ss ≈ (ImSubtree B)•(q ⊙ (WstdBranchesEq B (r ˢ) s'₁)) ss' ).
   apply setoidfamilycmpgeneral.
   refine (_ ⊙ H1).
-  assert ( H2 : (ImSubtree B)•(WstdBranchesEq B (r ⁻¹) s'₂ ⊙ (ImSubtree2Tree B u' ↱ q')) ss'
-                        ≈ (ImSubtree B)•(WstdBranchesEq B r ⁻¹ s'₂) ((ImSubtree B)•q' ss')).
+  assert ( H2 : (ImSubtree B)•(WstdBranchesEq B (r ˢ) s'₂ ⊙ (ImSubtree2Tree B u' ↱ q')) ss'
+                        ≈ (ImSubtree B)•(WstdBranchesEq B (r ˢ) s'₂) ((ImSubtree B)•q' ss')).
   apply setoidsym, setoidfamilycmpgeneral.
   refine (H2 ⊙ _).
   apply setoidfamilyirr.
@@ -519,39 +540,39 @@ Definition CohFam_map {A : setoid}(B : setoidfamily A)(X : setoid)(u u' : Wstd B
   u ≈ u' → CohFam_std B X u ⇒ CohFam_std B X u'.
 
   intro r. apply (Build_setoidmap _ _ (CohFam_fnc B X r)).
-  intros CF CF' R. intros s' ss'. apply (R ((ImSubtree B)•(r ⁻¹) s')).
+  intros CF CF' R. intros s' ss'. apply (R ((ImSubtree B)•(r ˢ) s')).
 Defined.
 
 Definition CohFam {A : setoid}(B : setoidfamily A)(X : setoid) : setoidfamily (Wstd B).
 
   apply (Build_setoidfamily (Wstd B) (CohFam_std B X) (CohFam_map B X)).
   apply Build_setoidfamilyaxioms.
-  intros u CF s. set (F := projT1 CF). set (C := λ s₁ s₂ q, (projT2 CF s₁ s₂ q) ⁻¹). apply C.
+  intros u CF s. set (F := projT1 CF). set (C := λ s₁ s₂ q, (projT2 CF s₁ s₂ q) ˢ). apply C.
   
   intros u u' r r' CF s' ss'. set (F := projT1 CF).
-  assert (q : ((ImSubtree B)•(r ⁻¹) s') ≈ ((ImSubtree B)•(r' ⁻¹) s')). apply setoidfamilyirr.
-  apply setoidtra with (y := F ((ImSubtree B)•(r' ⁻¹) s') ∘ ((ImSubtree B)•q) ((ImSubtree B)•(WstdBranchesEq B (r ⁻¹) s') ss') ).
+  assert (q : ((ImSubtree B)•(r ˢ) s') ≈ ((ImSubtree B)•(r' ˢ) s')). apply setoidfamilyirr.
+  apply setoidtra with (y := F ((ImSubtree B)•(r' ˢ) s') ∘ ((ImSubtree B)•q) ((ImSubtree B)•(WstdBranchesEq B (r ˢ) s') ss') ).
   apply (projT2 CF _ _ q).
-  apply (setoidmapextensionality _ _ (F ((ImSubtree B)•(r' ⁻¹) s'))).
+  apply (setoidmapextensionality _ _ (F ((ImSubtree B)•(r' ˢ) s'))).
   apply setoidfamilycmpgeneral.
   
   intros u u' u'' r₁ r₂ CF s'' ss''. set (F := projT1 CF).
-  assert (q : (ImSubtree B)•r₁ ⁻¹ ((ImSubtree B)•r₂ ⁻¹ s'') ≈ (ImSubtree B)•((r₂ ⊙ r₁) ⁻¹) s'').
+  assert (q : (ImSubtree B)•r₁ ˢ ((ImSubtree B)•r₂ ˢ s'') ≈ (ImSubtree B)•((r₂ ⊙ r₁) ˢ) s'').
   apply setoidfamilycmpgeneral.
-  apply setoidtra with (y := F ((ImSubtree B)•((r₂ ⊙ r₁) ⁻¹) s'') ∘ ((ImSubtree B)•q)
-                               ((ImSubtree B)•(WstdBranchesEq B (r₁ ⁻¹) ((ImSubtree B)•r₂ ⁻¹ s''))
-                                             ((ImSubtree B)•(WstdBranchesEq B (r₂ ⁻¹) s'') ss'')) ).
+  apply setoidtra with (y := F ((ImSubtree B)•((r₂ ⊙ r₁) ˢ) s'') ∘ ((ImSubtree B)•q)
+                               ((ImSubtree B)•(WstdBranchesEq B (r₁ ˢ) ((ImSubtree B)•r₂ ˢ s''))
+                                             ((ImSubtree B)•(WstdBranchesEq B (r₂ ˢ) s'') ss'')) ).
   apply (projT2 CF _ _ q).
-  apply (setoidmapextensionality _ _ (F ((ImSubtree B) • (r₂ ⊙ r₁) ⁻¹ s''))).
+  apply (setoidmapextensionality _ _ (F ((ImSubtree B) • (r₂ ⊙ r₁) ˢ s''))).
 
-  set (M := (ImSubtree B)•q ((ImSubtree B)•( (WstdBranchesEq B r₁ ⁻¹ ((ImSubtree B) • r₂ ⁻¹ s''))
-                                                                ⊙ (WstdBranchesEq B r₂ ⁻¹ s'') )
+  set (M := (ImSubtree B)•q ((ImSubtree B)•( (WstdBranchesEq B r₁ ˢ ((ImSubtree B) • r₂ ˢ s''))
+                                                                ⊙ (WstdBranchesEq B r₂ ˢ s'') )
                                           ss'')).
-  assert (H1 : (ImSubtree B) • q ((ImSubtree B) • (WstdBranchesEq B r₁ ⁻¹ ((ImSubtree B) • r₂ ⁻¹ s''))
-                                                ((ImSubtree B) • (WstdBranchesEq B r₂ ⁻¹ s'') ss''))
+  assert (H1 : (ImSubtree B) • q ((ImSubtree B) • (WstdBranchesEq B r₁ ˢ ((ImSubtree B) • r₂ ˢ s''))
+                                                ((ImSubtree B) • (WstdBranchesEq B r₂ ˢ s'') ss''))
                              ≈ M).
   apply setoidmapextensionality, setoidfamilycmpgeneral.
-  assert (H2 : M ≈ (ImSubtree B) • (WstdBranchesEq B (r₂ ⊙ r₁) ⁻¹ s'') ss'').
+  assert (H2 : M ≈ (ImSubtree B) • (WstdBranchesEq B (r₂ ⊙ r₁) ˢ s'') ss'').
   apply setoidfamilycmpgeneral.
   apply (H2 ⊙ H1).
 Defined.
@@ -562,14 +583,14 @@ Lemma CohFamEqChar {A : setoid}(B : setoidfamily A)(X : setoid)
                             ≈ projT1 CF' ((ImSubtree B)•r s) ∘ (ImSubtree B)•(WstdBranchesEq B r s).
 Proof.
   intros H s.
-  apply setoidtra with ( y := projT1 CF ((ImSubtree B)•r ⁻¹ ((ImSubtree B)•r s))
-                                     ∘ (ImSubtree B)•((WstdBranchesEq B (r ⁻¹) ((ImSubtree B)•r s)) ⊙ (WstdBranchesEq B r s)) ).
+  apply setoidtra with ( y := projT1 CF ((ImSubtree B)•r ˢ ((ImSubtree B)•r s))
+                                     ∘ (ImSubtree B)•((WstdBranchesEq B (r ˢ) ((ImSubtree B)•r s)) ⊙ (WstdBranchesEq B r s)) ).
   apply (projT2 CF).
-  apply setoidtra with ( y := projT1 CF ((ImSubtree B)•r ⁻¹ ((ImSubtree B)•r s))
-                                     ∘ (ImSubtree B)•(WstdBranchesEq B (r ⁻¹) ((ImSubtree B)•r s))
+  apply setoidtra with ( y := projT1 CF ((ImSubtree B)•r ˢ ((ImSubtree B)•r s))
+                                     ∘ (ImSubtree B)•(WstdBranchesEq B (r ˢ) ((ImSubtree B)•r s))
                                      ∘ (ImSubtree B)•(WstdBranchesEq B r s) ).
   intro ss.
-  apply (setoidmapextensionality _ _ (projT1 CF ((ImSubtree B) • r ⁻¹ ((ImSubtree B) • r s)))).
+  apply (setoidmapextensionality _ _ (projT1 CF ((ImSubtree B) • r ˢ ((ImSubtree B) • r s)))).
   apply setoidsym, setoidfamilycmpgeneral.
   intro ss. apply (H ((ImSubtree B)•r s)).
 Qed.
@@ -686,21 +707,21 @@ Definition RecDefTransp  {A : setoid}(B : setoidfamily A)
   intro D. induction D as [z RD br IH]. set (u := projT1 z).
   set (CF := projT1 RD : CohFam B X u). set (k := projT2 z : ImSubtree B (projT1 z) ⇒ X).
   intros u' r.
-  set (CF' := (CohFam B X)•r⁻¹ CF).
+  set (CF' := (CohFam B X)•r ˢ CF).
   assert (H : k ∘ ((ImSubtree B)•r) ≈ RecStep B algX u' CF').
   set (e1 := (λ s, (projT2 RD) ((ImSubtree B)•r s)) :
                k ∘ ((ImSubtree B)•r) ≈ (RecStep B algX u (projT1 RD)) ∘ (ImSubtree B) • r).
   refine (_ ⊙ e1).
-  apply setoidtra with (y := ((RecStep B algX u' CF') ∘ (ImSubtree B)•r⁻¹) ∘ (ImSubtree B)•r).
-  intro ss'. apply RecStepEq with (r0 := r⁻¹). apply setoidrefl.
+  apply setoidtra with (y := ((RecStep B algX u' CF') ∘ (ImSubtree B)•r ˢ) ∘ (ImSubtree B)•r).
+  intro ss'. apply RecStepEq with (r0 := r ˢ). apply setoidrefl.
   apply setoidmaprid_tactical with (f := RecStep B algX u' CF')
-                                   (h := (ImSubtree B)•r⁻¹ ∘ (ImSubtree B)•r).
+                                   (h := (ImSubtree B)•r ˢ ∘ (ImSubtree B)•r).
   intro ss'. apply setoidfamilycmpinvert.
   apply supd with (a := existT _ CF' H).
-  intro s'. set (r' := r⁻¹).
-  specialize IH with (b := (ImSubtree B)•r'⁻¹ s')
+  intro s'. set (r' := r ˢ).
+  specialize IH with (b := (ImSubtree B)•r' ˢ s')
                      (u' := ImSubtree2Tree B u' s')
-                     (r' := WstdBranchesEq B r'⁻¹ s').
+                     (r' := WstdBranchesEq B r' ˢ s').
   apply IH.
 Defined.
 
@@ -744,10 +765,10 @@ Theorem RecDefUniqGenInv {A : setoid}(B : setoidfamily A)
         {u u' : Wstd B}(r : u ≈ u')
         (k : ImSubtree B u ⇒ X)(k' : ImSubtree B u' ⇒ X) :
   RecDef B algX (existT _ u k) →
-  RecDef B algX (existT _ u' k') → k ∘ (ImSubtree B)•r⁻¹ ≈ k'.
+  RecDef B algX (existT _ u' k') → k ∘ (ImSubtree B)•r ˢ ≈ k'.
 Proof.
-  intros d d'. apply setoidtra with (y := k' ∘ ((ImSubtree B)•r ∘ (ImSubtree B)•r⁻¹)).
-  intro s'. apply (RecDefUniqGen B algX r k k' d d' ((ImSubtree B)•r⁻¹ s')).
+  intros d d'. apply setoidtra with (y := k' ∘ ((ImSubtree B)•r ∘ (ImSubtree B)•r ˢ)).
+  intro s'. apply (RecDefUniqGen B algX r k k' d d' ((ImSubtree B)•r ˢ s')).
   apply setoidmaprid_tactical with (f := k'). intro s'. apply setoidfamilycmpinvert.
 Qed.
 

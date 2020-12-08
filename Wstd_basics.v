@@ -1,6 +1,4 @@
 (*-----------------------------------------------------------------*)
-(*                             Coq 8.8.0                           *)
-(*-----------------------------------------------------------------*)
 (* Some Utf8 notations for Propositions-as-types at the Set level. *)
 (*-----------------------------------------------------------------*)
 (* Author: Olov Wilander. 2012                                     *)
@@ -165,10 +163,9 @@ Qed.
 (* Authors: Erik Palmgren and Olov Wilander *)
 (*------------------------------------------*)
 
-Notation "p ⁻¹" := (setoidsym _ _ _ p) (at level 3, no associativity).
+Notation "p 'ˢ'" := (setoidsym _ _ _ p) (at level 3, no associativity).
 Notation "p ⊙ q" := (setoidtra _ _ _ _ q p) (at level 34, right associativity).
 Notation "F ↱ p" := (setoidmapextensionality _ _ F _ _ p) (at level 100).
-
 
 Record setoidfamilyaxioms 
    (A: setoid)
@@ -269,14 +266,14 @@ Lemma setoidfamilyirrrevgeneral
     F•p u ≈ F•q v ->  u  ≈ v. 
 Proof.
   intros x y p q u v H.
-  assert (F • p ⁻¹ (F • p u) ≈  u).
+  assert (F • (p ˢ) (F • p u) ≈  u).
   apply  setoidfamilycmpinvert.
-  assert (F • q ⁻¹ (F • q v) ≈ v).
+  assert (F • q ˢ (F • q v) ≈ v).
   apply setoidfamilycmpinvert.
-  assert (F • q ⁻¹ (F • p u) ≈ F • q ⁻¹ (F • q v)).
+  assert (F • q ˢ (F • p u) ≈ F • q ˢ (F • q v)).
   apply setoidmapextensionality.
   apply H.
-  assert ( F • p ⁻¹ (F • p u) ≈ F • q ⁻¹ (F • p u)).
+  assert ( F • p ˢ (F • p u) ≈ F • q ˢ (F • p u)).
   apply setoidfamilyirr.
   swesetoid.
 Defined.
@@ -417,12 +414,12 @@ Qed.
 
 Lemma EqRelOverIsSymm (A : setoid)(B : setoidfamily A)
       (x x' : A)(p : x ≈ x')(y : B x)(y' : B x') :
-  y ≈[p] y' → y' ≈[p⁻¹] y.
+  y ≈[p] y' → y' ≈[p ˢ] y.
 Proof.
   intros. apply setoidsym.
-  assert (B•(p⁻¹) (B•p y) ≈ B•(p⁻¹) y'). apply setoidfamilyirrgeneral. assumption.
-  assert (y ≈ B•(p⁻¹) (B•p y)). apply setoidsym. apply setoidfamilycmpinvert.
-  apply setoidtra with (y := B•(p⁻¹) (B•p y)). assumption. assumption.
+  assert (B•(p ˢ) (B•p y) ≈ B•(p ˢ) y'). apply setoidfamilyirrgeneral. assumption.
+  assert (y ≈ B•(p ˢ) (B•p y)). apply setoidsym. apply setoidfamilycmpinvert.
+  apply setoidtra with (y := B•(p ˢ) (B•p y)). assumption. assumption.
 Qed.
 
 Lemma EqRelOverIsTrans (A : setoid)(B : setoidfamily A)
