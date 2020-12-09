@@ -1,6 +1,6 @@
 Require Utf8.
     
-Require Import Wstd_basics.
+Require Import setoid_basics.
 
 Inductive Identity {A: Set}(x: A) : A -> Set
   := Identity_refl : Identity x x.
@@ -38,6 +38,10 @@ Notation "p ⊙ᵐ q" := (Identity_trans p q)
 
 Notation "f ↱ᵐ p" := (Identity_congr f _ _ p)
                       (at level 100).
+
+Definition ap {A B : Set}{f : A → B}{x x' : A}
+  : x == x' → f x == f x'
+  := Identity_congr f x x'.
 
 Definition setcmp {A B C : Set}
   : (A → B) → (B → C) → A → C
@@ -88,6 +92,7 @@ Definition transpIsFunct {A : Set}{B : A → Set}{x x' x'' : A}
   destruct p. apply Identity_refl.
 Defined.
 
+
 Definition transpfunct {A : Set}{B : A → Set}{x x' x'' : A}
            (p : x == x')(q : x' == x'')
   : ∀ y y', (B•ᵐq · B•ᵐp) y == y' → B•ᵐ(p⊙ᵐq) y == y'.
@@ -97,6 +102,7 @@ Definition transpfunct {A : Set}{B : A → Set}{x x' x'' : A}
   (*destruct p. apply r.*)
 Defined.
 
+  
 Definition transpfunct_rev {A : Set}{B : A → Set}{x x' x'' : A}
            (p : x == x')(q : x' == x''){y : B x}{y' : B x''}
   : B•ᵐ(p⊙ᵐq) y == y' → (B•ᵐq · B•ᵐp) y == y'.
@@ -104,7 +110,6 @@ Definition transpfunct_rev {A : Set}{B : A → Set}{x x' x'' : A}
   intros r. apply (Identity_trans (b := B•ᵐ(p⊙ᵐq) y)).
   apply Identity_sym. apply (Id2HΠ (transpIsFunct p q) y).
   apply r.
-  (*destruct p. apply r.*)
 Defined.
 
 Definition transpEq {A : Set}(B : A → Set){x x' : A}
@@ -113,7 +118,6 @@ Definition transpEq {A : Set}(B : A → Set){x x' : A}
 
   apply ((λ u, B•ᵐu)↱ᵐh).
 Defined.
-
 
 Definition transpIsEqv1 {A : Set}(B : A → Set){x x' : A}
            (p : x == x') :
@@ -166,20 +170,6 @@ Definition extΣ {A : Set}{B : A → Set}(z z' : sigT B) :
   apply rfl.
 Defined.
 
-Lemma transpΣIndip_eq {X A : Set}(R : X → A → Set){x x' : X}(p : x == x')
-  : ∀ u, (λ x, sigT (R x))•ᵐp u == existT _ (projT1 u) ((λ x, R x (projT1 u))•ᵐp (projT2 u)).
-Proof.
-  intros [a r]. simpl. destruct p. simpl. apply rfl.
-Qed.
-
-Lemma transpΣIndip {X A : Set}(R : X → A → Set){x x' : X}(p : x == x')
-  : ∀ u u', existT _ (projT1 u) ((λ x, R x (projT1 u))•ᵐp (projT2 u)) == u'
-            → (λ x, sigT (R x))•ᵐp u == u'.
-Proof.
-  intros u u' H. refine (transpΣIndip_eq R p u ⊙ᵐ_). apply H.
-Qed.
-
-
 
 Definition EqOver {A : Set}(B : A → Set){x x' : A}(p : x == x')
   : B x → B x' → Set
@@ -187,6 +177,7 @@ Definition EqOver {A : Set}(B : A → Set){x x' : A}(p : x == x')
 
 Notation "y ==[ p ] y'" := (EqOver _ p y y')
   (at level 70, no associativity, only parsing).
+
 
 Definition TotEq {A : Set}(B : A → Set){x x' : A}
   : x == x' → Set
@@ -200,28 +191,15 @@ Definition isTotEq {A : Set}(B : A → Set){x x' : A}(p : x == x')
 Definition fstTotEq {A : Set}(B : A → Set){x x' : A}{p : x == x'}
   : TotEq B p → B x
   := λ v, fst (projT1 v).
-    
 
 Definition sndTotEq {A : Set}(B : A → Set){x x' : A}{p : x == x'}
   : TotEq B p → B x'
   := λ v, snd (projT1 v).
 
-  
 Definition eqTotEq {A : Set}(B : A → Set){x x' : A}{p : x == x'}(v : TotEq B p)
   : fstTotEq B v ==[p] sndTotEq B v
   := projT2 v.
 
-Definition ap {A B : Set}{f : A → B}{x x' : A}
-  : x == x' → f x == f x'.
-
-  intro p. destruct p. apply rfl.
-Defined.
-
-Definition apd {A : Set}{B : A → Set}{f : ∀ x, B x}{x x' : A}
-  : ∀ p : x == x', f x ==[ p ] f x'.
-
-  intro p. destruct p. apply rfl.
-Defined.
 
 Lemma domtransp  {A Y : Set}{B : A → Set}{x x' : A}(p : x == x')
   : ∀ f f', f == f' · B•ᵐp → (λ x, B x → Y)•ᵐp f == f'.

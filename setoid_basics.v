@@ -124,6 +124,7 @@ Defined.
 
 Notation "F ∘ G" := (comp _ F G) (at level 10).
 
+
 Theorem setoidmap_composition_assoc {A B C D: setoid} (F: C ⇒ D) (G: B ⇒ C) (H: A ⇒ B)
   : F ∘ G ∘ H ≈ F ∘ (G ∘ H).
 Proof.
@@ -139,8 +140,6 @@ Theorem setoidmap_comp_id_right {A B: setoid} (F: A ⇒ B): F ∘ idmap ≈ F.
 Proof.
   swesetoid.
 Qed.
-
-(* Additional lemmas *)
 
 Lemma setoidmaprid_tactical {A B : setoid}(f : A ⇒ B)(h : A ⇒ A) :
   h ≈ idmap → f ∘ h ≈ f.
@@ -189,7 +188,9 @@ Record setoidfamily (A: setoid) :=
     setoidfamilymap :  ∀x y: A, ∀p: x ≈ y,
                          setoidfamilyobj x ⇒ setoidfamilyobj y;
     setoidfamilyaxs: setoidfamilyaxioms A setoidfamilyobj setoidfamilymap
-    }.
+  }.
+
+
 
 Definition setoidfamilyref {A:setoid}(F:setoidfamily A):=
 xsetoidfamilyref A (setoidfamilyobj  A F)
@@ -203,9 +204,13 @@ Definition setoidfamilycmp {A:setoid}(F:setoidfamily A):=
 xsetoidfamilycmp A (setoidfamilyobj  A F)
 (setoidfamilymap A F)(setoidfamilyaxs A F).
 
-
+Notation "| B |" := (setoidfamilyobj _ B)
+                      (at level 70, no associativity, only parsing).
 Notation "F • p" := (setoidfamilymap _ F _ _ p)
   (at level 9, right associativity).
+
+
+(* Some lemmas for handling setoidfamilies *)
 
 Lemma setoidfamilyrefgeneral {A: setoid} (F: setoidfamily A):
   ∀x: A, ∀p: x ≈ x, ∀y: F x, F•p y ≈ y.
@@ -223,7 +228,6 @@ Proof.
     eauto using setoidtra, setoidfamilyirr, setoidfamilycmp.
 Defined.
 
-(* some extra lemma for handling setoidfamilies *)
 
 Lemma setoidfamilycmpinvert 
  {A: setoid} (F: setoidfamily A):
@@ -327,8 +331,6 @@ assert (F • p u ≈ u) as L.
 apply setoidfamilyrefgeneral.
 apply (setoidtra _ _  _ _ L H).
 Defined.
-
-(* Additional lemmas on setoid families *)
 
 Lemma setoidfamilyrefgeneralinv {A: setoid} (F: setoidfamily A):
   ∀x: A, ∀p: x ≈ x, ∀y: F x, y ≈ F•p y.
@@ -434,6 +436,8 @@ Proof.
   apply setoidrefl.
   apply setoidtra with (y := B•q (B•p y)). assumption. assumption.
 Qed.
+
+(* Total setoid of a setoid family *)
 
 Definition TotStdfamEq {A : setoid}(B : setoidfamily A)
            {a a' : A} : a ≈ a' → Set :=

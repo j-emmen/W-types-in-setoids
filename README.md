@@ -17,9 +17,9 @@ Reference to the propositions in the paper is given.
 freeWstd.v  
 Proofs of the last section of the paper on discrete (or free) setoids.
 
-Wstd_basics.v  
+setoid_basics.v  
 Definitions and basic properties of setoids and setoid families.
-Mainly due to Erik Palmgren and Olov Wilander.
+Mostly due to Erik Palmgren and Olov Wilander.
 
 IdType.v  
-Definition and basic properties of the identity type (in Paulin-Mohring's formulation).
+Definition and basic properties of the identity type.

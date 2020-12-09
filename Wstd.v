@@ -10,7 +10,7 @@
 (*--------------------------------------------------------------------------*)
 
 
-Require Import Wstd_basics.
+Require Import setoid_basics.
 
 (* Section 2.1 *)
 
