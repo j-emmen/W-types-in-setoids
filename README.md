@@ -1,6 +1,6 @@
 # W-types-in-setoids
 This is the Coq 8.8.0 formalisation of the paper "W-types in setoids",
-[arXiv:1809.02375](https://arxiv.org/abs/1809.02375).
+[arXiv:1809.02375v2](https://arxiv.org/abs/1809.02375v2).
 
 Abstract:
 W-types and their categorical analogue, initial algebras for polynomial endofunctors,
