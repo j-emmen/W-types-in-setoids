@@ -221,6 +221,14 @@ Proof.
   apply setoidfamilyref.
 Defined.
 
+(*
+Lemma setoidfamilyrefgeneral_rev {A: setoid} (F: setoidfamily A):
+  ∀x: A, ∀p: x ≈ x, ∀y: F x, y ≈ F•p y.
+Proof.
+  intros x p y. apply setoidsym. apply setoidfamilyrefgeneral.
+Qed.
+*)
+  
 Lemma setoidfamilycmpgeneral {A: setoid} (F: setoidfamily A):
   ∀x y z: A, ∀p: x ≈ y, ∀q: y ≈ z, ∀r: x ≈ z, ∀w: F x, F•q (F•p w) ≈ F•r w.
 Proof.
@@ -382,6 +390,52 @@ Proof.
   apply setoidtra with (y := F•p u).
   apply setoidfamilyirr. apply H.
 Defined.
+
+Lemma setoidfamilyrefgeneralfunction
+      {A: setoid} (F: setoidfamily A){B : setoid}{a : A}
+      (f f' : F a ⇒ B):
+  ∀ p : a ≈ a,
+    f ∘ F•p ≈ f' → f ≈ f'.
+Proof.
+  intros p pp u. apply setoidtra with (y := f (F•p u)).
+  apply setoidmapextensionality. apply setoidfamilyrefgeneralinv.
+  apply pp.
+Qed.
+
+Lemma setoidfamilyrefgeneralfunction_rev
+  {A: setoid} (F: setoidfamily A){B : setoid}{a : A}
+      (f f' : F a ⇒ B):
+  ∀ p : a ≈ a,
+    f ≈ f' ∘ F•p → f ≈ f'.
+Proof.
+  intros p pp. apply setoidfamilyrefgeneralfunction with (p0 := p).
+  intro u. apply setoidtra with (y := f' (F•p (F•p u))).
+  apply (pp ((F • p u))).
+  apply setoidmapextensionality.
+  apply setoidfamilycmpinvert.
+Qed.
+
+(* Reindexing of setoid families *)
+
+Definition ridx_std {A A' : setoid}(f : A' ⇒ A) : setoidfamily A → setoidfamily A'.
+
+  intro B. apply (Build_setoidfamily A' (λ a, B (f a)) (λ a a' p, B•(f ↱ p))).
+  apply Build_setoidfamilyaxioms.
+  intros a b. apply setoidfamilyrefgeneral.
+  intros a a' p p' b. apply setoidfamilyirr.
+  intros a a' a'' p p' b. apply setoidfamilycmpgeneral.
+Defined.
+
+Lemma ridx_chk {A : setoid}(B : setoidfamily A)(a : A) : ridx_std (@idmap A) B a = B a.
+Proof.
+  reflexivity.
+Qed.
+
+Lemma ridx_chk_trsp {A : setoid}(B : setoidfamily A){a a' : A}(p : a ≈ a')
+  : (ridx_std (@idmap A) B)•p = B•p.
+Proof.
+  reflexivity.
+Qed.
 
 
 (*-------------------------------------------------------------*)
