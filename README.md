@@ -11,6 +11,7 @@ The paper is mapped to this repository as follows:
 
 Section n --> S(n-2)*.v
 
-The formalisation does not include proofs of Theorems 2.8 and 2.9.
+Not everything in Section 2 is formalised here.
+In particular, the formalisation does not include proofs of Theorems 2.8 and 2.9.
 For a Coq proof of the latter, see
 [Palmgren, LCC setoids in Coq](https://github.com/erikhpalmgren/LCC_setoids_in_Coq).

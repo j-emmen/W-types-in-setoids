@@ -75,24 +75,7 @@ Definition WstdPER_ist {A : setoid}{B : setoidfamily A}{w w' : WstdObj B}(r : Ws
   : ∀ b b', b ≈[WstdPER_node B r] b' → WstdPER B (Wty_ist w b) (Wty_ist w' b')
   := λ b b' q, DWty_ist _ _ (w , w') r (PackTotEq _ _ b b' q).
 
-(* Lemma 3.3 *)
-
-Lemma istExt2Ext {A : setoid}{B : setoidfamily A}{w : WstdObj B}
-      (istExt : ∀ b b', b ≈ b' → WstdPER B (Wty_ist w b) (Wty_ist w b'))
-  : WstdPER B w w.
-Proof.
-  apply (isMatch (setoidrefl _ _)). intros b b' q. specialize (istExt b b').
-  apply istExt. apply (setoidfamilyrefgeneral_tactical_rev B _ _ _ _ q).
-Qed.
-
-Lemma Ext2istExt {A : setoid}{B : setoidfamily A}{w : WstdObj B}(r : WstdPER B w w)
-  : ∀ b b', b ≈ b' → WstdPER B (Wty_ist w b) (Wty_ist w b').
-Proof.
-  intros b b' q. apply (WstdPER_ist r b b').
-  apply setoidfamilyrefgeneral_tactical. apply q.
-Qed.
-
-(* Proposition 3.4 - Start *)
+(* Proposition 3.3 - Start *)
 
 Lemma WstdPER_aux_symm {A : setoid}(B : setoidfamily A) :
   ∀ z, WstdPER_aux B z → WstdPER_aux B (snd z , fst z).
@@ -138,13 +121,13 @@ Proof.
   intros w w' w'' r r'. apply (WstdPER_aux_trans B (w', w'') r' w r).
 Qed.
 
-(* Proposition 3.4 - End *)
+(* Proposition 3.3 - End *)
 
 (*---------------------------------*)
 (* The setoid of extensional trees *)
 (*---------------------------------*)
 
-(* Definition 3.6 *)
+(* Definition 3.4 *)
 
 Definition WstdBase {A : setoid}(B : setoidfamily A) : Set :=
   ∃ w, WstdPER B w w.
@@ -162,6 +145,26 @@ Definition Wstd {A : setoid}(B : setoidfamily A) : setoid.
   intros u u' u'' r r'. apply WstdPER_trans with (w' := projT1 u'). apply r. apply r'.
 Defined.
 
+(* End Definition 3.4 *)
+
+(* Lemma 3.5 *)
+
+Lemma istExt2Ext {A : setoid}{B : setoidfamily A}{w : WstdObj B}
+      (istExt : ∀ b b', b ≈ b' → WstdPER B (Wty_ist w b) (Wty_ist w b'))
+  : WstdPER B w w.
+Proof.
+  apply (isMatch (setoidrefl _ _)). intros b b' q. specialize (istExt b b').
+  apply istExt. apply (setoidfamilyrefgeneral_tactical_rev B _ _ _ _ q).
+Qed.
+
+Lemma Ext2istExt {A : setoid}{B : setoidfamily A}{w : WstdObj B}(r : WstdPER B w w)
+  : ∀ b b', b ≈ b' → WstdPER B (Wty_ist w b) (Wty_ist w b').
+Proof.
+  intros b b' q. apply (WstdPER_ist r b b').
+  apply setoidfamilyrefgeneral_tactical. apply q.
+Qed.
+
+(* End Lemma 3.5 *)
 
 Definition node {A : setoid}(B : setoidfamily A) : Wstd B ⇒ A.
   
@@ -184,7 +187,7 @@ Definition ist {A : setoid}{B : setoidfamily A}(u : Wstd B) :
 Defined.
 
 
-(* Lemma 3.7 *)
+(* Lemma 3.6 *)
 
 Lemma easyMatch {A : setoid}{B : setoidfamily A}{u u' : Wstd B}
       (p : node B u ≈ node B u')

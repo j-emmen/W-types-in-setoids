@@ -23,7 +23,7 @@ Defined.
 (* Family of immediate subtrees *)
 (*------------------------------*)
 
-(* Definition 3.8 - Start *)
+(* Definition 3.7 - Start *)
 
 Definition ImSubTrees_std {A : setoid}(B : setoidfamily A)(u : Wstd B) : setoid.
 
@@ -57,9 +57,9 @@ Definition ImSubTrees {A : setoid}(B : setoidfamily A) : setoidfamily (Wstd B).
   apply setoidfamilycmpgeneral.
 Defined.
 
-(* Definition 3.8 - End *)
+(* Definition 3.7 - End *)
 
-(* Remark 3.9 *)
+(* Remark 3.8 *)
 
 Section Factorisation.
   Context {A : setoid}{B : setoidfamily A}.
@@ -101,7 +101,7 @@ Definition SubBranches {A : setoid}{B : setoidfamily A}(u : Wstd B)
   := ridx_std (M_ist u) (Branches B).
 
         
-(* Remark 3.10 *)
+(* Remarks 3.8-9 *)
 
 Section Coherence_stuff.
   Context {A : setoid}{B : setoidfamily A}.
@@ -159,16 +159,3 @@ Definition istCoh {A : setoid}(B : setoidfamily A) : CohFam (Branches B) (Wstd B
 Definition M_istCoh {A : setoid}(B : setoidfamily A) : CohFam (ImSubTrees B) (Wstd B)
   := existT _ M_ist (M_istIsCoh B).
 
-(* A couple of useful functions. *)
-
-Definition ist_node {A : setoid}{B : setoidfamily A}(u : Wstd B)
-  : ImSubTrees B u ⇒ A
-  := node B ∘ M_ist u.
-
-Lemma ist_node_coh {A : setoid}{B : setoidfamily A}
-      {u u' : Wstd B}(r : u ≈ u') :
-  ist_node u ≈ ist_node u' ∘ (ImSubTrees B)•r.
-Proof.
-  intro b. unfold ist_node.
-  apply (setoidmapextensionality _ _ (node B)). apply ist_coh.
-Qed.

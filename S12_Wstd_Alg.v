@@ -18,7 +18,7 @@ Section Algebra_Map.
     apply istExt2Ext. cbn. apply (setoidmapextensionality _ _ h).
   Defined.
 
-  (* Lemma 3.11 *)
+  (* Lemma 3.10 *)
 
   Definition SupMap : PolyObj B (Wstd B) ⇒ Wstd B.
 
@@ -29,7 +29,7 @@ Section Algebra_Map.
     apply (easyMatch pp o).
   Defined.
 
-  (* Proposition 3.12 - Start *)
+  (* Proposition 3.11 - Start *)
 
   Definition UnsupMap : Wstd B ⇒ PolyObj B (Wstd B)
     := InPoly (node B) (istCoh B).
@@ -54,7 +54,7 @@ Section Algebra_Map.
     apply (setoidmapextensionality _ _ h). apply setoidfamilyrefgeneralinv.
   Qed.
 
-  (* Proposition 3.12 - End *)
+  (* Proposition 3.11 - End *)
 
 End Algebra_Map.
   
