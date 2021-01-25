@@ -15,3 +15,5 @@ Not everything in Section 2 is formalised here.
 In particular, the formalisation does not include proofs of Theorems 2.8 and 2.9.
 For a Coq proof of the latter, see
 [Palmgren, LCC setoids in Coq](https://github.com/erikhpalmgren/LCC_setoids_in_Coq).
+
+N.B. The file S20_AlgGlue.v takes a little more time to type-check than the other files.

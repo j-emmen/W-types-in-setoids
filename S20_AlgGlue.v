@@ -89,7 +89,7 @@ Section Glueing_along_Algebra.
                                                   (f' := projT2 (PolyArr B (glue CF) (existT (λ a0 : A, B a0 ⇒ Wstd B) a f)))
                                                   (p := projT1 K).
     apply (projT2 K).
-Qed.    
+  Qed.    
   
   (* CohFamSST_trsp only needed in Lemma 4.13 *)
   
